@@ -93,4 +93,5 @@ jobs:
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v2
         with:
-          token: ${{ secrets.SONAR_TOKEN }}
+          args: >
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
