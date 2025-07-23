@@ -1,37 +1,114 @@
 # This workflow will build a golang project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
 
-name: Go
+# .github/workflows/main.yml
+name: CI Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+      - master
+      - develop
   pull_request:
-    branches: [ "main" ]
 
 jobs:
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run GitLeaks scan
+        uses: zricethezav/gitleaks-action@v2.3.3
+        with:
+          args: --verbose --config=gitleaks-config.toml
 
   build:
-    runs-on: golang:1.24.3
+    name: Build
+    runs-on: ubuntu-latest
+    needs: security-scan
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.24.3
+          cache: true
+      - name: Build
+        run: make build
+      - name: List bin/
+        run: ls -lart bin/
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bin-artifacts
+          path: bin/**
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.24'
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 1.24.3
+          cache: true
+      - run: make unit-test
+      - run: ls -lart reports
+      - uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-reports
+          path: |
+            reports/*.out
+            reports/*.xml
 
-    - name: Build
-      run: make build
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 1.24.3
+          cache: true
+      - run: make integration-test
+      - run: ls -lart reports
+      - uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-reports
+          path: reports/*.out
 
-    - name: Test
-      run: make unit-test
-
-    - name: SonarQube Cloud Scan
-      uses: SonarSource/sonarcloud-github-action@v5.0.0
-      #with:
-      #  args: # optional
-      #  projectBaseDir: # optional
-      #  scannerVersion: # optional, default is 7.0.2.4839
-      #  scannerBinariesUrl: # optional, default is https://binaries.sonarsource.com/Distribution/sonar-scanner-cli
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    needs:
+      - unit-tests
+      - integration-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 1.24.3
+          cache: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: unit-test-reports
+          path: reports
+      - uses: actions/download-artifact@v4
+        with:
+          name: integration-test-reports
+          path: reports
+      - run: ls -lart reports
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@v2
+        with:
+          token: ${{ secrets.SONAR_TOKEN }}
+      - name: SonarCloud Quality Gate
+        uses: sonarsource/sonarcloud-quality-gate-action@v1
+        with:
+          token: ${{ secrets.SONAR_TOKEN }}
           
