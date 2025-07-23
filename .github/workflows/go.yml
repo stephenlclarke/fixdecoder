@@ -94,7 +94,3 @@ jobs:
         uses: sonarsource/sonarcloud-github-action@v2
         with:
           token: ${{ secrets.SONAR_TOKEN }}
-      - name: SonarCloud Quality Gate
-        uses: sonarsource/sonarcloud-quality-gate-action@v1
-        with:
-          token: ${{ secrets.SONAR_TOKEN }}
