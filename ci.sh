@@ -155,12 +155,6 @@ function upload_artifacts() {
   local git_version=${git_tag:="v0.0.0"}
 
   [ $(git status --porcelain | wc -l) -ne "0" ] && git_version="${git_version}-dirty"
-
-  log_message ">> Uploading artifacts to s3://ewm-op/release/${application_name}/${git_version}/"
-  aws s3 cp ./bin/${application_name}/${git_version}/ s3://ewm-op/release/${application_name}/${git_version}/ --recursive
-
-  log_message ">> Listing artifacts uploaded for ${git_version}"
-  aws s3 ls s3://ewm-op/release/${application_name}/${git_version}/ --recursive --human-readable --summarize
 }
 
 function integration_tests() {
@@ -171,6 +165,8 @@ function integration_tests() {
   log_message ">> Running integration tests"
 
   # integration tests
+  mkdir -p reports
+  touch reports/coverage.integration.out
   go test -v -tags=integration -covermode=atomic -coverpkg=./... -coverprofile=reports/coverage.integration.out ./...
   go test -tags=integration -timeout=10m -run '^TestMain' ./...
 
