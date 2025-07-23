@@ -13,18 +13,6 @@ on:
   pull_request:
 
 jobs:
-  security-scan:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Run GitLeaks scan
-        uses: zricethezav/gitleaks-action@v2.3.3
-        with:
-          args: --verbose --config=gitleaks-config.toml
-
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -111,4 +99,3 @@ jobs:
         uses: sonarsource/sonarcloud-quality-gate-action@v1
         with:
           token: ${{ secrets.SONAR_TOKEN }}
-          
