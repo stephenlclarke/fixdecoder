@@ -1,0 +1,37 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: golang:1.24.3
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.24'
+
+    - name: Build
+      run: make build
+
+    - name: Test
+      run: make unit-test
+
+    - name: SonarQube Cloud Scan
+      uses: SonarSource/sonarcloud-github-action@v5.0.0
+      #with:
+      #  args: # optional
+      #  projectBaseDir: # optional
+      #  scannerVersion: # optional, default is 7.0.2.4839
+      #  scannerBinariesUrl: # optional, default is https://binaries.sonarsource.com/Distribution/sonar-scanner-cli
+          
