@@ -93,5 +93,10 @@ jobs:
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v2
         with:
+          projectBaseDir: .
           args: >
+            -Dsonar.projectKey=steve-clarke_fix-decoder
+            -Dsonar.organization=steve-clarke
+            -Dsonar.sources=.
+            -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
