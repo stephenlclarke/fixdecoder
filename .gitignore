@@ -25,3 +25,4 @@ bin/
 fix/fix*/fix*.go
 fix/sensitiveTagNames.go
 build_version.env
+fixlog.txt
