@@ -67,7 +67,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: integration-test-reports
-          path: 
+          path: |
             integration-test-reports/*.out
             integration-test-reports/*.xml
   sonarcloud:
