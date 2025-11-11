@@ -120,13 +120,13 @@ computer. **Windows** users will need to rename the download and add a `.exe`
 extension to the binary before you can execute it. **Linux** and **MacOS**
 users will need to do a `chmod +x` on the file first.
 
-### Download it BITBUCKET-ONLY
+### Download it **(BITBUCKET PIPELINE-ONLY)**
 
 Check out the Repo's [Download Page](https://github.com/stephenlclarke/fixdecoder/downloads/) to see what versions are available for the computer you want to run it on.
 
-![repo logo](docs/repo-download.png) BITBUCKET-ONLY
+![repo logo](docs/repo-download.png)
 
-Or by downloading the artifacts from the S3 bucket;
+Or by downloading the artifacts from the S3 bucket; **(BITBUCKET PIPELINE-ONLY)**
 
 ```bash
 ❯ aws s3 ls s3://stephenlclarke/release/fixdecoder/ --recursive --human-readable --summarize
