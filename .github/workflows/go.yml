@@ -84,7 +84,6 @@ jobs:
           go-version: 1.24.3
           cache: true
 
-      # pull in reports from previous jobs
       - uses: actions/download-artifact@v4
         with:
           name: unit-test-reports
@@ -107,7 +106,7 @@ jobs:
             -Dsonar.projectKey=stephenlclarke_fixdecoder
             -Dsonar.projectName=fixdecoder
             -Dsonar.projectVersion=1.0.0
-            -Dsonar.projectDescription="FIX Decoder"
+            -Dsonar.projectDescription=FIX\ Decoder
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.organization=stephenlclarke
             -Dsonar.host.url=https://sonarcloud.io
