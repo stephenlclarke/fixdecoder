@@ -12,7 +12,7 @@ URL_BASE="https://raw.githubusercontent.com/quickfix/quickfix/master/spec"
 # versions to seed download; will discover others too
 VERSIONS=("40" "41" "42" "43" "44" "50" "50SP1" "50SP2" "T11")
 # Base module import path for generated packages
-MODULE_PATH="bitbucket.org/edgewater/fixdecoder/fix"
+MODULE_PATH="github.com/stephenlclarke/fixdecoder/fix"
 
 GO_VER="1.24.3"
 

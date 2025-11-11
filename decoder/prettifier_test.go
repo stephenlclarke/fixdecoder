@@ -7,6 +7,8 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/stephenlclarke/fixdecoder/fix"
 )
 
 func TestPrettifyWithEnum(t *testing.T) {
@@ -47,7 +49,8 @@ func TestStreamLogWithFixMatch(t *testing.T) {
 
 	in := strings.NewReader("INFO 8=FIX.4.4\x0135=A\x0110=123\x01 more")
 	var out bytes.Buffer
-	err := streamLog(in, &out)
+
+	err := streamLog(in, &out, os.Stderr, fix.CreateObfuscator(fix.SensitiveTagNames, false))
 
 	if err != nil {
 		t.Errorf("Expected no error, got: %v", err)
@@ -61,7 +64,7 @@ func TestStreamLogWithFixMatch(t *testing.T) {
 func TestStreamLogNoMatch(t *testing.T) {
 	in := strings.NewReader("Just a regular log line")
 	var out bytes.Buffer
-	err := streamLog(in, &out)
+	err := streamLog(in, &out, os.Stderr, fix.CreateObfuscator(fix.SensitiveTagNames, false))
 
 	if err != nil {
 		t.Errorf("Expected no error, got: %v", err)
@@ -92,7 +95,7 @@ func TestPrettifyFilesStdin(t *testing.T) {
 	w.Close()
 
 	var out, errOut bytes.Buffer
-	code := PrettifyFiles([]string{}, &out, &errOut)
+	code := PrettifyFiles([]string{}, &out, &errOut, fix.CreateObfuscator(fix.SensitiveTagNames, false))
 
 	if code != 0 {
 		t.Errorf("Expected return code 0, got %d", code)
@@ -105,7 +108,8 @@ func TestPrettifyFilesStdin(t *testing.T) {
 
 func TestPrettifyFileslsInvalidPath(t *testing.T) {
 	var out, errOut bytes.Buffer
-	code := PrettifyFiles([]string{"/path/does/not/exist"}, &out, &errOut)
+
+	code := PrettifyFiles([]string{"/path/does/not/exist"}, &out, &errOut, fix.CreateObfuscator(fix.SensitiveTagNames, false))
 
 	if code != 1 {
 		t.Errorf("Expected return code 1 on error, got %d", code)
@@ -127,14 +131,15 @@ func TestPrettifyFilesErrorReadingStdin(t *testing.T) {
 	// Force error from streamLogFunc
 	original := streamLogFunc
 
-	streamLogFunc = func(in io.Reader, out io.Writer) error {
+	streamLogFunc = func(in io.Reader, out io.Writer, errOut io.Writer, obfuscator *fix.Obfuscator) error {
 		return errors.New("mocked streamLog error")
 	}
 
 	defer func() { streamLogFunc = original }()
 
 	var out, errOut bytes.Buffer
-	code := PrettifyFiles([]string{}, &out, &errOut)
+
+	code := PrettifyFiles([]string{}, &out, &errOut, fix.CreateObfuscator(fix.SensitiveTagNames, false))
 
 	if code != 1 {
 		t.Errorf("Expected exit code 1, got %d", code)
@@ -165,7 +170,7 @@ func TestPrettifyFilesReadFromDash(t *testing.T) {
 		return []FieldValue{{Tag: 35, Value: "A"}}
 	}
 
-	code := PrettifyFiles([]string{"-"}, &out, &errOut)
+	code := PrettifyFiles([]string{"-"}, &out, &errOut, fix.CreateObfuscator(fix.SensitiveTagNames, false))
 	if code != 0 {
 		t.Errorf("Expected code 0, got %d", code)
 	}
@@ -182,14 +187,14 @@ func TestPrettifyFilesStreamLogErrorOnFile(t *testing.T) {
 
 	// Override streamLog to force an error
 	original := streamLogFunc
-	streamLogFunc = func(r io.Reader, w io.Writer) error {
+	streamLogFunc = func(r io.Reader, w io.Writer, errOut io.Writer, obfuscator *fix.Obfuscator) error {
 		return errors.New("mock error")
 	}
 
 	defer func() { streamLogFunc = original }()
 
 	var out, errOut bytes.Buffer
-	code := PrettifyFiles([]string{tmpFile.Name()}, &out, &errOut)
+	code := PrettifyFiles([]string{tmpFile.Name()}, &out, &errOut, fix.CreateObfuscator(fix.SensitiveTagNames, false))
 
 	if code != 1 {
 		t.Errorf("Expected error code 1, got %d", code)
@@ -220,7 +225,7 @@ func TestPrettifyFilesSuccessCase(t *testing.T) {
 		return []FieldValue{{Tag: 35, Value: "A"}}
 	}
 
-	code := PrettifyFiles([]string{tmpFile.Name()}, &out, &errOut)
+	code := PrettifyFiles([]string{tmpFile.Name()}, &out, &errOut, fix.CreateObfuscator(fix.SensitiveTagNames, false))
 	if code != 0 {
 		t.Errorf("Expected return code 0, got %d", code)
 	}

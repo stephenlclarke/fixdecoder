@@ -2,15 +2,15 @@
 package fix
 
 import (
-    fix40    "bitbucket.org/edgewater/fixdecoder/fix/fix40"
-    fix41    "bitbucket.org/edgewater/fixdecoder/fix/fix41"
-    fix42    "bitbucket.org/edgewater/fixdecoder/fix/fix42"
-    fix43    "bitbucket.org/edgewater/fixdecoder/fix/fix43"
-    fix44    "bitbucket.org/edgewater/fixdecoder/fix/fix44"
-    fix50    "bitbucket.org/edgewater/fixdecoder/fix/fix50"
-    fix50SP1 "bitbucket.org/edgewater/fixdecoder/fix/fix50SP1"
-    fix50SP2 "bitbucket.org/edgewater/fixdecoder/fix/fix50SP2"
-    fixT11   "bitbucket.org/edgewater/fixdecoder/fix/fixT11"
+    fix40    "github.com/stephenlclarke/fixdecoder/fix/fix40"
+    fix41    "github.com/stephenlclarke/fixdecoder/fix/fix41"
+    fix42    "github.com/stephenlclarke/fixdecoder/fix/fix42"
+    fix43    "github.com/stephenlclarke/fixdecoder/fix/fix43"
+    fix44    "github.com/stephenlclarke/fixdecoder/fix/fix44"
+    fix50    "github.com/stephenlclarke/fixdecoder/fix/fix50"
+    fix50SP1 "github.com/stephenlclarke/fixdecoder/fix/fix50SP1"
+    fix50SP2 "github.com/stephenlclarke/fixdecoder/fix/fix50SP2"
+    fixT11   "github.com/stephenlclarke/fixdecoder/fix/fixT11"
 )
 
 // chooseEmbeddedXML returns the raw XML constant for a given FIX version.

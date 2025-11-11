@@ -1,4 +1,3 @@
-// main.go
 package main
 
 import (
@@ -9,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"bitbucket.org/edgewater/fixdecoder/decoder"
-	"bitbucket.org/edgewater/fixdecoder/fix"
+	"github.com/stephenlclarke/fixdecoder/decoder"
+	"github.com/stephenlclarke/fixdecoder/fix"
 	"golang.org/x/term"
 )
 
@@ -18,7 +17,7 @@ import (
 var (
 	Version = "0.0.0"
 	Branch  = "main"
-	GitUrl  = "git@bitbucket.org:edgewater/fixdecoder.git"
+	GitUrl  = "git@github.com:stephenlclarke/fixdecoder.git"
 	Sha     = "0000000"
 )
 
@@ -96,9 +95,11 @@ type CLIOptions struct {
 	Info           bool
 	Validate       bool
 	Colour         colourFlag
+	Secret         bool
+	Version        bool
 }
 
-// validateXMLFlag ensures the user supplied -xml=FILE syntax is correct.
+// validateXMLFlag ensures the user supplied --xml=FILE syntax is correct.
 // parseFlagsArgs parses command-line arguments using a fresh FlagSet.
 func parseFlagsArgs(args []string) CLIOptions {
 	var message messageFlag
@@ -107,18 +108,22 @@ func parseFlagsArgs(args []string) CLIOptions {
 	var colour colourFlag
 
 	fs := flag.NewFlagSet("fixdecoder", flag.ContinueOnError)
-	xmlPath := fs.String("xml", "", "Path to alternative FIX XML file")
-	fixVersion := fs.String("fix", "44", "FIX version to use ("+fix.SupportedFixVersions()+")")
-	verbose := fs.Bool("verbose", false, "Show full message structure with enums")
-	includeHeader := fs.Bool("header", false, "Include Header block")
-	includeTrailer := fs.Bool("trailer", false, "Include Trailer block")
+
 	columnOutput := fs.Bool("column", false, "Display enums in columns")
+	fixVersion := fs.String("fix", "44", "FIX version to use ("+fix.SupportedFixVersions()+")")
+	includeHeader := fs.Bool("header", false, "Include Header block")
 	info := fs.Bool("info", false, "Show XML schema summary (fields, components, messages, version counts)")
+	secret := fs.Bool("secret", false, "Obfuscate sensitive FIX tag values")
+	includeTrailer := fs.Bool("trailer", false, "Include Trailer block")
 	validate := fs.Bool("validate", false, "Validate FIX messages during decoding")
-	fs.Var(&message, "message", "Message name or MsgType (omit to list all messages)")
-	fs.Var(&component, "component", "Component to display (omit to list all components)")
-	fs.Var(&tag, "tag", "Tag number to display details for (omit to list all tags)")
+	verbose := fs.Bool("verbose", false, "Show full message structure with enums")
+	xmlPath := fs.String("xml", "", "Path to alternative FIX XML file")
+	showVersion := fs.Bool("version", false, "Print version information and exit")
+
 	fs.Var(&colour, "colour", "Force coloured output (yes|no). Default: auto-detect based on stdout")
+	fs.Var(&component, "component", "Component to display (omit to list all components)")
+	fs.Var(&message, "message", "Message name or MsgType (omit to list all messages)")
+	fs.Var(&tag, "tag", "Tag number to display details for (omit to list all tags)")
 
 	fs.Usage = func() {
 		PrintUsage()
@@ -130,30 +135,37 @@ func parseFlagsArgs(args []string) CLIOptions {
 	fs.Parse(args)
 
 	return CLIOptions{
-		XMLPath:        *xmlPath,
-		FixVersion:     *fixVersion,
+		Colour:         colour,
+		ColumnOutput:   *columnOutput,
 		Component:      component,
-		Verbose:        *verbose,
+		FixVersion:     *fixVersion,
 		IncludeHeader:  *includeHeader,
 		IncludeTrailer: *includeTrailer,
-		ColumnOutput:   *columnOutput,
-		Message:        message,
-		Tag:            tag,
 		Info:           *info,
+		Message:        message,
+		Secret:         *secret,
+		Tag:            tag,
 		Validate:       *validate,
-		Colour:         colour,
+		Verbose:        *verbose,
+		XMLPath:        *xmlPath,
+		Version:        *showVersion,
 	}
+}
+
+func printVersion() {
+	fmt.Printf("fixdecoder %s (branch:%s, commit:%s)\n", Version, Branch, Sha)
+	fmt.Printf("  git clone %s\n", GitUrl)
 }
 
 // printUsage prints the program usage.
 func PrintUsage() {
-	fmt.Printf("fixdecoder %s (branch:%s, commit:%s)\n\n", Version, Branch, Sha)
-	fmt.Printf("  git clone %s\n\n", GitUrl)
-	fmt.Println("Usage: fixdecoder [[-fix=44] | [-xml FIX44.xml]] [-message[=MSG] [-verbose] [-column] [-header] [-trailer]]")
-	fmt.Println("       fixdecoder [[-fix=44] | [-xml FIX44.xml]] [-tag[=TAG] [-verbose] [-column]]")
-	fmt.Println("       fixdecoder [[-fix=44] | [-xml FIX44.xml]] [-component=[NAME] [-verbose]]")
-	fmt.Println("       fixdecoder [[-fix=44] | [-xml FIX44.xml]] [-info]")
-	fmt.Println("       fixdecoder [-validate] [-colour=yes|no] [file1.log file2.log ...]")
+	printVersion()
+	fmt.Println("Usage: fixdecoder [[--fix=44] | [--xml=FIX44.xml]] [--message[=MSG] [--verbose] [--column] [--header] [--trailer]]")
+	fmt.Println("       fixdecoder [[--fix=44] | [--xml=FIX44.xml]] [--tag[=TAG] [--verbose] [--column]]")
+	fmt.Println("       fixdecoder [[--fix=44] | [--xml=FIX44.xml]] [--component=[NAME] [--verbose]]")
+	fmt.Println("       fixdecoder [[--fix=44] | [--xml=FIX44.xml]] [--info]")
+	fmt.Println("       fixdecoder [--validate] [--colour=yes|no] [--secret] [file1.log file2.log ...]")
+	fmt.Println("       fixdecoder [--version]")
 }
 
 // loadSchema reads and parses the FIX XML into a SchemaTree.
@@ -192,6 +204,11 @@ func extractFileArgsOrStdin(args []string) []string {
 func Process(args []string, out, errOut io.Writer) int {
 	opts := parseFlagsArgs(args)
 
+	if opts.Version {
+		printVersion()
+		return 0
+	}
+
 	decoder.SetValidation(opts.Validate)
 
 	schema, err := loadSchemaFromOpts(opts)
@@ -212,8 +229,10 @@ func Process(args []string, out, errOut io.Writer) int {
 		decoder.DisableColours()
 	}
 
+	obfuscator := fix.CreateObfuscator(fix.SensitiveTagNames, opts.Secret)
+
 	files := extractFileArgsOrStdin(args)
-	return decoder.PrettifyFiles(files, out, errOut)
+	return decoder.PrettifyFiles(files, out, errOut, obfuscator)
 }
 
 // loadSchemaFromOpts picks between an explicit XML file or an embedded schema.

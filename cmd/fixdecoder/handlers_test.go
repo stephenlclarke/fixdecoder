@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"bitbucket.org/edgewater/fixdecoder/decoder"
+	"github.com/stephenlclarke/fixdecoder/decoder"
 )
 
 func captureOutput(f func()) string {

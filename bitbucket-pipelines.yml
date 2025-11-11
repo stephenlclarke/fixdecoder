@@ -2,13 +2,113 @@ image: golang:1.24.3
 
 definitions:
   caches:
-    go: go
+    gomod: /go/pkg/mod
+    gocache: /root/.cache/go-build
+
+  # Install common apps into the image and set Go environment variables
+  install_apps_into_image: &install_apps_into_image "apt-get update && apt-get install -y tree && go env -w GOMODCACHE=/go/pkg/mod GOCACHE=/root/.cache/go-build"
 
   steps:
+    # Setup Go environment & Caches
+    - step: &setup_go_environment
+        name: Setup Go Environment
+        caches: [gomod, gocache]
+        script:
+          - *install_apps_into_image
+          - ./ci.sh setup-environment
+
+    - step: &build
+        name: Build
+        caches: [gomod, gocache]
+        script:
+          - *install_apps_into_image
+          - ./ci.sh build
+
+    # Build Release (cross-compile for multiple OS/ARCH)
+    - step: &build_release
+        name: Build Release
+        size: 2x
+        caches: [gomod, gocache]
+        script:
+          - *install_apps_into_image
+          - ./ci.sh build-release
+        artifacts:
+          - bin/**
+
+    # Unit Tests
+    - step: &unit_tests
+        name: Unit Tests
+        caches: [gomod, gocache]
+        script:
+          - *install_apps_into_image
+          - ./ci.sh unit-test
+        artifacts:
+          - unit-test-reports/**
+
+    # Integration Tests
+    - step: &integration_tests
+        name: Integration Tests
+        caches: [gomod, gocache]
+        script:
+          - *install_apps_into_image
+          - ./ci.sh integration-test
+        artifacts:
+          - integration-test-reports/*
+
+    # SonarCloud Analysis - SQ will use as much memory / CPU as you throw at it
+    - step: &sonar_analysis
+        name: SonarCloud Analysis
+        size: 2x
+        artifacts:
+          - unit-test-reports/**
+          - integration-test-reports/**
+        script:
+          - *install_apps_into_image
+          - pipe: sonarsource/sonarcloud-scan:3.1.0
+            variables:
+              SONAR_TOKEN: $SONAR_TOKEN
+
+    # Upload artifacts to Bitbucket Downloads and AWS S3 via ci.sh upload / OIDC
+    - step: &upload
+        name: Upload
+        oidc: true
+        image: atlassian/pipelines-awscli
+        script:
+          - unset AWS_SECRET_ACCESS_KEY
+          - unset AWS_ACCESS_KEY_ID
+          - export AWS_WEB_IDENTITY_TOKEN_FILE=$(pwd)/web-identity-token
+          - echo $BITBUCKET_STEP_OIDC_TOKEN > $(pwd)/web-identity-token
+          - aws sts get-caller-identity
+          - ./ci.sh upload
+          - source build_version.env
+          - pipe: atlassian/bitbucket-upload-file:0.7.5
+            variables:
+              BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+              BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+              FILENAME: "./bin/fixdecoder-${BUILD_VERSION}.darwin-arm64"
+          - pipe: atlassian/bitbucket-upload-file:0.7.5
+            variables:
+              BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+              BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+              FILENAME: "./bin/fixdecoder-${BUILD_VERSION}.linux-arm64"
+          - pipe: atlassian/bitbucket-upload-file:0.7.5
+            variables:
+              BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+              BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+              FILENAME: "./bin/fixdecoder-${BUILD_VERSION}.linux-amd64"
+          - pipe: atlassian/bitbucket-upload-file:0.7.5
+            variables:
+              BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+              BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+              FILENAME: "./bin/fixdecoder-${BUILD_VERSION}.windows-amd64"
+        artifacts:
+          - bin/**
+          - build_version.env
+
+    # Security Scan using gitleaks
     - step: &security_scan
         name: Security Scan
         script:
-          # Run a security scan for sensitive data
           - pipe: atlassian/git-secrets-scan:3.1.0
             variables:
               DEBUG: "true"
@@ -18,68 +118,71 @@ definitions:
                 - "-v"
                 - "--config=gitleaks-config.toml"
 
-    - step: &build
-        name: Build
-        caches:
-          - go
+    # Update Repo badge with last build upload time
+    - step: &update_repo_badge
+        name: Update Repo badge
+        image: python:3.12
         script:
-          - make build
-        after-script:
-          - ls -lart bin/
-        artifacts:
-          - bin/**
-
-    - step: &unit-tests
-        name: Unit Tests
-        caches:
-          - go
-        script:
-          - make unit-test
-        after-script:
-          - ls -lart reports
-        artifacts:
-          - reports/*.out
-          - reports/*.xml
-
-    - step: &integration-tests
-        name: Integration Tests
-        caches:
-          - go
-        script:
-          - make integration-test
-        after-script:
-          - ls -lart reports
-        artifacts:
-          - reports/*.out
-
-    - step: &sonar_analysis
-        name: SonarCloud Analysis
-        artifacts:
-          - reports/**
-        caches:
-          - go
-        before-script:
-          - ls -lart reports
-        script:
-          - pipe: sonarsource/sonarcloud-scan:3.1.0
+          - pip install --user --upgrade pip
+          - pip install --user setuptools
+          - pip install --user pybadges
+          - python -m pybadges --left-text='Last Build Upload' --right-text="$(date)" --right-color='blue' > last_build_upload.svg
+          - pipe: atlassian/bitbucket-upload-file:0.7.2
             variables:
-              SONAR_TOKEN: $SONAR_TOKEN
-          - pipe: sonarsource/sonarcloud-quality-gate:0.2.0
-            variables:
-              SONAR_TOKEN: $SONAR_TOKEN
+              BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+              BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+              FILENAME: "last_build_upload.svg"
+
+    # Tag Version - Requires Conventional Commits; See CONTRIBUTING.md
+    - step: &tag_version
+        name: Tag Version
+        image: atlassian/default-image:latest
+        script:
+          - ./ci.sh tag-version
+        artifacts:
+          - build_version.env
 
 pipelines:
   default:
-    - step: *security_scan
-    - step: *build
-    - step: *unit-tests
-    - step: *integration-tests
+    - step: *setup_go_environment
+    - parallel:
+        - step: *unit_tests
+        - step: *integration_tests
+        - step: *security_scan
     - step: *sonar_analysis
 
   branches:
-    "{main,master,develop}":
-      - step: *security_scan
-      - step: *build
-      - step: *unit-tests
-      - step: *integration-tests
+    # Development pipeline... Fail-fast / quick feedback
+    develop:
+      - step: *setup_go_environment
+      - parallel:
+          - step: *unit_tests
+          - step: *integration_tests
+          - step: *security_scan
+      - parallel:
+          - step: *sonar_analysis
+          - step: *build_release
+
+    # Release pipeline; uses tagging and uploads artifacts
+    main:
+      - step: *setup_go_environment
+      - parallel:
+          - step: *unit_tests
+          - step: *integration_tests
+          - step: *security_scan
+      - step: *sonar_analysis
+      - step: *tag_version
+      - step: *build_release
+      - parallel:
+          - step: *upload
+          - step: *update_repo_badge
+
+  # Pull Request pipeline
+  pull-requests:
+    "**":
+      - step: *setup_go_environment
+      - parallel:
+          - step: *unit_tests
+          - step: *integration_tests
+          - step: *security_scan
       - step: *sonar_analysis

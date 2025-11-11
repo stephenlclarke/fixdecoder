@@ -1,10 +1,11 @@
 package decoder
 
 import (
+	"encoding/xml"
 	"slices"
 	"testing"
 
-	"bitbucket.org/edgewater/fixdecoder/fix"
+	"github.com/stephenlclarke/fixdecoder/fix"
 )
 
 const sampleXML = `
@@ -392,5 +393,51 @@ func TestFixTagLookupGetGroupOwner(t *testing.T) {
 
 	if owner := lookup.GetGroupOwner(999); owner != 0 {
 		t.Errorf("Expected owner of unknown tag 999 to be 0, got %d", owner)
+	}
+}
+
+func TestExtractMessageFieldsRequiredFlagAppends(t *testing.T) {
+	// Build a minimal dictionary mapping tag numbers to field names
+	lookup := &FixTagLookup{
+		tagToName: map[int]string{
+			11:  "ClOrdID",
+			55:  "Symbol",
+			454: "NoSecurityAltID",
+		},
+	}
+
+	// Craft a message with fields where only one is required (Required == "Y")
+	msg := struct {
+		XMLName xml.Name `xml:"message"`
+		Name    string   `xml:"name,attr"`
+		MsgType string   `xml:"msgtype,attr"`
+		Fields  []struct {
+			Name     string `xml:"name,attr"`
+			Required string `xml:"required,attr"`
+		} `xml:"field"`
+	}{
+		Name:    "NewOrderSingle",
+		MsgType: "D",
+		Fields: []struct {
+			Name     string `xml:"name,attr"`
+			Required string `xml:"required,attr"`
+		}{
+			{Name: "ClOrdID", Required: "Y"}, // should be appended to required
+			{Name: "Symbol", Required: "N"},  // not required
+		},
+	}
+
+	fieldOrder, required := extractMessageFields(msg, lookup)
+
+	// Field order should include both tags, in the same order they appear
+	wantOrder := []int{11, 55}
+	if !slices.Equal(fieldOrder, wantOrder) {
+		t.Fatalf("fieldOrder = %v, want %v", fieldOrder, wantOrder)
+	}
+
+	// Required should include only ClOrdID (11) due to Required == "Y"
+	wantReq := []int{11}
+	if !slices.Equal(required, wantReq) {
+		t.Fatalf("required = %v, want %v", required, wantReq)
 	}
 }

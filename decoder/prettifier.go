@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/stephenlclarke/fixdecoder/fix"
 	"golang.org/x/term"
 )
 
@@ -73,12 +74,12 @@ func Prettify(msg string, dict *FixTagLookup) string {
 	return sb.String()
 }
 
-func PrettifyFiles(paths []string, out io.Writer, errOut io.Writer) int {
+func PrettifyFiles(paths []string, out io.Writer, errOut io.Writer, obfuscator *fix.Obfuscator) int {
 	hadError := false
 
 	// If no paths at all, default to stdin (unchanged behaviour)
 	if len(paths) == 0 {
-		if err := streamLogFunc(os.Stdin, out); err != nil {
+		if err := streamLogFunc(os.Stdin, out, errOut, obfuscator); err != nil {
 			fmt.Fprintln(errOut, ColourError+"Error reading input:"+err.Error()+ColourReset)
 			return 1
 		}
@@ -112,7 +113,7 @@ func PrettifyFiles(paths []string, out io.Writer, errOut io.Writer) int {
 			r, c = f, f // will close after streaming
 		}
 
-		if err = streamLogFunc(r, out); err != nil {
+		if err = streamLogFunc(r, out, errOut, obfuscator); err != nil {
 			fmt.Fprintln(errOut, ColourError+"Error reading file:"+err.Error()+ColourReset)
 			hadError = true
 		}
@@ -129,13 +130,13 @@ func PrettifyFiles(paths []string, out io.Writer, errOut io.Writer) int {
 	return 0
 }
 
-func streamLog(in io.Reader, out io.Writer) error {
+func streamLog(in io.Reader, out io.Writer, errOut io.Writer, obfuscator *fix.Obfuscator) error {
 	scanner := bufio.NewScanner(in)
 	termWidth := getTerminalWidth()
 	separator := ColourTitle + strings.Repeat("=", termWidth) + ColourReset + "\n"
 
 	for scanner.Scan() {
-		line := scanner.Text()
+		line := obfuscator.Enabled(scanner.Text(), errOut)
 		handleLogLine(line, out, separator)
 	}
 
