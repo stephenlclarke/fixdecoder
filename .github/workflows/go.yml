@@ -78,19 +78,25 @@ jobs:
       - integration-tests
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-go@v5
         with:
           go-version: 1.24.3
           cache: true
+
+      # pull in reports from previous jobs
       - uses: actions/download-artifact@v4
         with:
           name: unit-test-reports
           path: unit-test-reports
+
       - uses: actions/download-artifact@v4
         with:
           name: integration-test-reports
           path: integration-test-reports
+
       - run: ls -lart unit-test-reports integration-test-reports
+
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v2
         env:
@@ -98,8 +104,22 @@ jobs:
         with:
           projectBaseDir: .
           args: >
-            -Dsonar.projectKey=stephenlclarke_fix-decoder
+            -Dsonar.projectKey=stephenlclarke_fixdecoder
+            -Dsonar.projectName=fixdecoder
+            -Dsonar.projectVersion=1.0.0
+            -Dsonar.projectDescription="FIX Decoder"
+            -Dsonar.sourceEncoding=UTF-8
             -Dsonar.organization=stephenlclarke
-            -Dsonar.sources=.
             -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.language=go
+            -Dsonar.sources=.
+            -Dsonar.tests=.
+            -Dsonar.inclusions=**/*.go
+            -Dsonar.exclusions=**/*_test.go,resources/**,fix/fix*/**/*.go
+            -Dsonar.test.inclusions=**/*_test.go
+            -Dsonar.junit.reportPaths=unit-test-reports/**/*.xml,integration-test-reports/**/*.xml
+            -Dsonar.go.coverage.reportPaths=unit-test-reports/**/*.out,integration-test-reports/**/*.out
+            -Dsonar.issue.ignore.multicriteria=e1
+            -Dsonar.issue.ignore.multicriteria.e1.ruleKey=go:S1192
+            -Dsonar.issue.ignore.multicriteria.e1.resourceKey=**/*_test.go
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
