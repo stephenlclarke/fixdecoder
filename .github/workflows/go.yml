@@ -106,7 +106,7 @@ jobs:
             -Dsonar.projectKey=stephenlclarke_fixdecoder
             -Dsonar.projectName=fixdecoder
             -Dsonar.projectVersion=1.0.0
-            -Dsonar.projectDescription=FIX\ Decoder
+            -Dsonar.projectDescription=FIXDecoder
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.organization=stephenlclarke
             -Dsonar.host.url=https://sonarcloud.io
