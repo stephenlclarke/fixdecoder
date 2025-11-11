@@ -1,7 +1,6 @@
 ![repo logo](docs/repo-logo.png)
 ![repo title](docs/repo-title.png)
 
-![Last Build Uploaded](https://github.com/stephenlclarke/fixdecoder/downloads/last_build_upload.svg)
 ---
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_fixdecoder&metric=alert_status&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=stephenlclarke_fixdecoder)
@@ -121,16 +120,16 @@ computer. **Windows** users will need to rename the download and add a `.exe`
 extension to the binary before you can execute it. **Linux** and **MacOS**
 users will need to do a `chmod +x` on the file first.
 
-### Download it
+### Download it BITBUCKET-ONLY
 
 Check out the Repo's [Download Page](https://github.com/stephenlclarke/fixdecoder/downloads/) to see what versions are available for the computer you want to run it on.
 
-![repo logo](docs/repo-download.png)
+![repo logo](docs/repo-download.png) BITBUCKET-ONLY
 
 Or by downloading the artifacts from the S3 bucket;
 
 ```bash
-❯ aws s3 ls s3://ewm-op/release/fixdecoder/ --recursive --human-readable --summarize
+❯ aws s3 ls s3://stephenlclarke/release/fixdecoder/ --recursive --human-readable --summarize
 2025-07-22 19:55:19    7.2 MiB release/fixdecoder/v2.0.2/fixdecoder-2.0.2.darwin-arm64
 2025-07-22 19:55:19    7.3 MiB release/fixdecoder/v2.0.2/fixdecoder-2.0.2.linux-amd64
 2025-07-22 19:55:19    7.3 MiB release/fixdecoder/v2.0.2/fixdecoder-2.0.2.linux-arm64
@@ -147,8 +146,8 @@ Total Objects: 8
 Choose the file that matches the machine operating system and architecture that you want and download it from the s3 bucket.
 
 ```bash
-❯ aws s3 cp s3://ewm-op/release/fixdecoder/v2.0.3-develop/fixdecoder-2.0.3-develop.darwin-arm64 ./fixdecoder
-download: s3://ewm-op/release/fixdecoder/v2.0.3-develop/fixdecoder-2.0.3-develop.darwin-arm64 to ./fixdecoder
+❯ aws s3 cp s3://stephenlclarke/release/fixdecoder/v2.0.3-develop/fixdecoder-2.0.3-develop.darwin-arm64 ./fixdecoder
+download: s3://stephenlclarke/release/fixdecoder/v2.0.3-develop/fixdecoder-2.0.3-develop.darwin-arm64 to ./fixdecoder
 ❯ chmod +x ./fixdecoder
 ❯ ./fixdecoder --version
 fixdecoder v2.0.3-develop (branch:develop, commit:c2a60e8)

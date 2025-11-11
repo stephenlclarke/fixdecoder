@@ -175,7 +175,7 @@ function compile_binary() {
 upload_artifacts() {
   # --- constants
   readonly artifact_dir="./bin"
-  readonly s3_bucket="ewm-op"
+  readonly s3_bucket="stephenlclarke"
   readonly s3_prefix="release"
 
   # --- temporarily relax strict mode inside this function only
