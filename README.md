@@ -4,17 +4,17 @@
 ![Last Build Uploaded](https://github.com/stephenlclarke/fixdecoder/downloads/last_build_upload.svg)
 ---
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=edgewater_fixdecoder&metric=alert_status&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=edgewater_fixdecoder)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=edgewater_fixdecoder&metric=bugs&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=edgewater_fixdecoder)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=edgewater_fixdecoder&metric=code_smells&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=edgewater_fixdecoder)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=edgewater_fixdecoder&metric=coverage&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=edgewater_fixdecoder)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=edgewater_fixdecoder&metric=duplicated_lines_density&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=edgewater_fixdecoder)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=edgewater_fixdecoder&metric=ncloc&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=edgewater_fixdecoder)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=edgewater_fixdecoder&metric=reliability_rating&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=edgewater_fixdecoder)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=edgewater_fixdecoder&metric=reliability_rating&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=edgewater_fixdecoder)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=edgewater_fixdecoder&metric=sqale_index&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=edgewater_fixdecoder)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=edgewater_fixdecoder&metric=sqale_rating&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=edgewater_fixdecoder)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=edgewater_fixdecoder&metric=vulnerabilities&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=edgewater_fixdecoder)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_fixdecoder&metric=alert_status&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=stephenlclarke_fixdecoder)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_fixdecoder&metric=bugs&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=stephenlclarke_fixdecoder)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_fixdecoder&metric=code_smells&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=stephenlclarke_fixdecoder)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_fixdecoder&metric=coverage&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=stephenlclarke_fixdecoder)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_fixdecoder&metric=duplicated_lines_density&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=stephenlclarke_fixdecoder)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_fixdecoder&metric=ncloc&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=stephenlclarke_fixdecoder)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_fixdecoder&metric=reliability_rating&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=stephenlclarke_fixdecoder)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_fixdecoder&metric=reliability_rating&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=stephenlclarke_fixdecoder)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_fixdecoder&metric=sqale_index&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=stephenlclarke_fixdecoder)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_fixdecoder&metric=sqale_rating&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=stephenlclarke_fixdecoder)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_fixdecoder&metric=vulnerabilities&token=693074ba90b11562241b1e602d8dc9ec0ef7bff5)](https://sonarcloud.io/summary/new_code?id=stephenlclarke_fixdecoder)
 ---
 
 # Steve's FIX Decoder / logfile prettify utility
@@ -77,7 +77,7 @@ Flags:
 ❯ ./bin/fixdecoder/v2.0.3-develop/fixdecoder --help
 fixdecoder v2.0.3-develop (branch:develop, commit:f3c0f91)
 
-  git clone git@bitbucket.org:edgewater/fixdecoder.git
+  git clone git@github.com:stephenlclarke/fixdecoder.git
 
 Usage: fixdecoder [[--fix=44] | [--xml FIX44.xml]] [--message[=MSG] [--verbose] [--column] [--header] [--trailer]]
        fixdecoder [[--fix=44] | [--xml FIX44.xml]] [--tag[=TAG] [--verbose] [--column]]
