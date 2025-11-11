@@ -274,8 +274,8 @@ function integration_tests() {
 }
 
 function code_scan() {
-  if [[ -n "${BITBUCKET_BUILD_NUMBER:-}" ]]; then
-    log_message ">> Skipping SonarQube scan in Bitbucket Pipelines"
+  if [[ -n "${GIT_BUILD_NUMBER:-}" ]]; then
+    log_message ">> Skipping SonarQube scan in Git Pipelines"
     code_scan=true
     return
   fi
@@ -324,9 +324,9 @@ function copy_binaries() {
 function get_version() {
   set -euo pipefail
 
-  # Resolve branch (prefer Bitbucket vars in CI)
-  local git_branch="${BITBUCKET_BRANCH:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')}"
-  if [ -n "${BITBUCKET_TAG:-}" ] && [ -z "$git_branch" ]; then
+  # Resolve branch (prefer Git vars in CI)
+  local git_branch="${GIT_BRANCH:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')}"
+  if [ -n "${GIT_TAG:-}" ] && [ -z "$git_branch" ]; then
     git_branch="main"
   fi
 
@@ -449,7 +449,7 @@ function write_build_version_env() {
 }
 
 function update_git_version_tag() {
-  if [[ "${BITBUCKET_BRANCH:-}" != "main" ]]; then
+  if [[ "${GIT_BRANCH:-}" != "main" ]]; then
     log_warning "Not on main branch, skipping tag"
     local cur="$(current_tag)"
     write_build_version_env "$cur"
@@ -510,10 +510,12 @@ for target in "$@"; do
       ;;
     unit-test)
       common_preparation
+      generate_fix
       unit_tests
       ;;
     integration-test)
       common_preparation
+      generate_fix
       integration_tests
       ;;
     scan)
