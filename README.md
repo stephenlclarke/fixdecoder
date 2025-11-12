@@ -264,6 +264,17 @@ fixdecoder v2.0.3-develop (branch:develop, commit:c2a60e8)
   git clone git@github.com:stephenlclarke/fixdecoder.git
 ```
 
+# Third-Party Specifications
+
+This project uses the public FIX Protocol XML specifications from the
+[QuickFIX project](https://github.com/quickfix/quickfix/tree/master/spec).
+The XML files are downloaded during the build and used to generate Go sources
+under `fix/` and to drive message decoding at runtime.
+
+The QuickFIX specifications are licensed under the **BSD 2-Clause License**.
+Their copyright notice and license terms are included in this repository’s
+[`NOTICE`](./NOTICE) file (and in `licenses/QUICKFIX-BSD-2-Clause.txt`).
+
 ---
 
 © 2025 Steve Clarke · Released under the [AGPL-3.0 License](https://www.gnu.org/licenses/agpl-3.0.html)
