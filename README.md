@@ -140,39 +140,10 @@ computer. **Windows** users will need to rename the download and add a `.exe`
 extension to the binary before you can execute it. **Linux** and **MacOS**
 users will need to do a `chmod +x` on the file first.
 
-### Download it **(BITBUCKET PIPELINE-ONLY)**
+### Download it
 
-Check out the Repo's [Download Page](https://github.com/stephenlclarke/fixdecoder/downloads/) to see what versions are available for the computer you want to run it on.
-
-![repo logo](docs/repo-download.png)
-
-Or by downloading the artifacts from the S3 bucket; **(BITBUCKET PIPELINE-ONLY)**
-
-```bash
-❯ aws s3 ls s3://stephenlclarke/release/fixdecoder/ --recursive --human-readable --summarize
-2025-07-22 19:55:19    7.2 MiB release/fixdecoder/v2.0.2/fixdecoder-2.0.2.darwin-arm64
-2025-07-22 19:55:19    7.3 MiB release/fixdecoder/v2.0.2/fixdecoder-2.0.2.linux-amd64
-2025-07-22 19:55:19    7.3 MiB release/fixdecoder/v2.0.2/fixdecoder-2.0.2.linux-arm64
-2025-07-22 19:55:19    7.6 MiB release/fixdecoder/v2.0.2/fixdecoder-2.0.2.windows-amd64
-2025-07-22 20:15:25    7.2 MiB release/fixdecoder/v2.0.3/fixdecoder-2.0.3.darwin-arm64
-2025-07-22 20:15:25    7.3 MiB release/fixdecoder/v2.0.3/fixdecoder-2.0.3.linux-amd64
-2025-07-22 20:15:25    7.3 MiB release/fixdecoder/v2.0.3/fixdecoder-2.0.3.linux-arm64
-2025-07-22 20:15:25    7.6 MiB release/fixdecoder/v2.0.3/fixdecoder-2.0.3.windows-amd64
-
-Total Objects: 8
-   Total Size: 58.7 MiB
-```
-
-Choose the file that matches the machine operating system and architecture that you want and download it from the s3 bucket.
-
-```bash
-❯ aws s3 cp s3://stephenlclarke/release/fixdecoder/v2.0.3-develop/fixdecoder-2.0.3-develop.darwin-arm64 ./fixdecoder
-download: s3://stephenlclarke/release/fixdecoder/v2.0.3-develop/fixdecoder-2.0.3-develop.darwin-arm64 to ./fixdecoder
-❯ chmod +x ./fixdecoder
-❯ ./fixdecoder --version
-fixdecoder v2.0.3-develop (branch:develop, commit:c2a60e8)
-  git clone git@github.com:stephenlclarke/fixdecoder.git
-```
+Check out the Repo's [Releases Page](https://github.com/stephenlclarke/fixdecoder/releases)
+to see what versions are available for the computer you want to run it on.
 
 ### Build it
 
